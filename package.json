@@ -19,6 +19,7 @@
     "fmt:check": "oxfmt --check"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1049.0",
     "obsidian": "1.12.3"
   },
   "devDependencies": {
