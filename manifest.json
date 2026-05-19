@@ -1,0 +1,10 @@
+{
+  "id": "r2-sync",
+  "name": "r2-sync",
+  "version": "0.1.0",
+  "minAppVersion": "1.12.7",
+  "description": "A clean Obsidian plugin starter for the future r2-sync implementation.",
+  "author": "shiomiyan",
+  "authorUrl": "https://github.com/shiomiyan",
+  "isDesktopOnly": false
+}
