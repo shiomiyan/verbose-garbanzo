@@ -1,14 +1,47 @@
 # r2-sync
 
-`r2-sync` is an Obsidian plugin starter repository for future plugin development.
+`r2-sync` is a read-only Obsidian plugin that syncs Markdown files from Cloudflare R2 into your vault without overwriting existing notes.
 
-It keeps the runtime surface intentionally small:
+The plugin is intentionally narrow:
 
-- one command
-- one settings tab
-- one modal
+- Cloudflare R2 only
+- Markdown files only
+- existing local files are always skipped
+- credentials are stored with Obsidian secret storage
 
-The plugin behavior is still generic on purpose. This repository is meant to be the clean starting point for a future `r2-sync` implementation.
+## Behavior
+
+- The command **Sync from R2 now** runs an immediate sync.
+- The plugin also runs one background sync on load when configuration is complete.
+- Periodic sync is controlled by `syncIntervalMinutes`.
+- Setting `syncIntervalMinutes` to `0` disables periodic sync after startup.
+- Synced files are written under the configured local folder, preserving the path relative to the configured R2 prefix.
+
+Example:
+
+```text
+R2 key:    clippings/2026-05-16-1554-7261fb0.md
+Vault file: Clippings/2026-05-16-1554-7261fb0.md
+```
+
+## Configuration
+
+Normal settings are stored in plugin data:
+
+- `accountId`
+- `bucket`
+- `remotePrefix`
+- `localFolder`
+- `syncIntervalMinutes`
+- `maxConcurrentDownloads`
+- `lastProcessedKey`
+
+Secrets are stored with Obsidian secret storage:
+
+- `accessKeyId`
+- `secretAccessKey`
+
+The plugin is read-only against R2. It does not upload, modify, or delete remote objects.
 
 ## Development
 
@@ -70,16 +103,6 @@ This repository includes GitHub Actions for CI and releases.
 Example:
 
 ```bash
-git tag v0.1.0
-git push origin v0.1.0
+git tag 0.1.0
+git push origin 0.1.0
 ```
-
-## Next Things To Customize
-
-Before turning this starter into the real plugin, update:
-
-- plugin name and ID if needed
-- plugin description
-- sample command name and behavior
-- default setting value
-- modal title and body text

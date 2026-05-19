@@ -38,9 +38,10 @@ export default defineConfig({
   treeshake: true,
   tsconfig: "./tsconfig.json",
   transform: {
-    target: "es2018",
+    target: "es2022",
   },
   output: {
+    codeSplitting: false,
     file: "main.js",
     format: "cjs",
     banner,
