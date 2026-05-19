@@ -1,6 +1,6 @@
 {
   "name": "r2-sync",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A read-only Obsidian plugin that syncs Markdown files from Cloudflare R2 into your vault without overwriting existing notes.",
   "keywords": [
     "obsidian",
