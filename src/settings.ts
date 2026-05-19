@@ -2,6 +2,8 @@ import type { Plugin } from "obsidian";
 
 export type PluginSettings = {
   accountId: string;
+  accessKeyIdSecretName: string;
+  secretAccessKeySecretName: string;
   bucket: string;
   remotePrefix: string;
   localFolder: string;
@@ -20,6 +22,8 @@ export type PersistedData = {
 
 export const DEFAULT_SETTINGS: PluginSettings = {
   accountId: "",
+  accessKeyIdSecretName: "",
+  secretAccessKeySecretName: "",
   bucket: "",
   remotePrefix: "clippings/",
   localFolder: "Clippings",
@@ -39,6 +43,8 @@ export function normalizeLocalFolder(value: string): string {
 export function normalizeSettings(settings: PluginSettings): PluginSettings {
   return {
     accountId: settings.accountId.trim(),
+    accessKeyIdSecretName: settings.accessKeyIdSecretName.trim(),
+    secretAccessKeySecretName: settings.secretAccessKeySecretName.trim(),
     bucket: settings.bucket.trim(),
     remotePrefix: normalizeRemotePrefix(settings.remotePrefix),
     localFolder: normalizeLocalFolder(settings.localFolder),

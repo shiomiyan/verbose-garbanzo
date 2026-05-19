@@ -70,7 +70,7 @@ export default class R2SyncPlugin extends Plugin {
   }
 
   private async executeSync({ manual }: { manual: boolean }) {
-    const secrets = getPluginSecrets(this.app);
+    const secrets = getPluginSecrets(this.app, this.settings);
     if (!secrets) {
       if (manual) {
         new Notice(MANUAL_SYNC_FAILED);

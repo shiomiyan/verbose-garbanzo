@@ -1,9 +1,6 @@
 import type { App } from "obsidian";
 import type { PluginSettings } from "../settings";
 
-const ACCESS_KEY_ID_SECRET_ID = "r2-sync-access-key-id";
-const SECRET_ACCESS_KEY_SECRET_ID = "r2-sync-secret-access-key";
-
 export type PluginSecrets = {
   accessKeyId: string;
   secretAccessKey: string;
@@ -28,7 +25,7 @@ export function getMissingConfiguration(app: App, settings: PluginSettings): str
     missing.push("local folder");
   }
 
-  const secrets = getPluginSecrets(app);
+  const secrets = getPluginSecrets(app, settings);
   if (!secrets?.accessKeyId) {
     missing.push("access key ID");
   }
@@ -40,9 +37,9 @@ export function getMissingConfiguration(app: App, settings: PluginSettings): str
   return missing;
 }
 
-export function getPluginSecrets(app: App): PluginSecrets | null {
-  const accessKeyId = app.secretStorage.getSecret(ACCESS_KEY_ID_SECRET_ID)?.trim();
-  const secretAccessKey = app.secretStorage.getSecret(SECRET_ACCESS_KEY_SECRET_ID)?.trim();
+export function getPluginSecrets(app: App, settings: PluginSettings): PluginSecrets | null {
+  const accessKeyId = app.secretStorage.getSecret(settings.accessKeyIdSecretName)?.trim() ?? "";
+  const secretAccessKey = app.secretStorage.getSecret(settings.secretAccessKeySecretName)?.trim() ?? "";
 
   if (!accessKeyId || !secretAccessKey) {
     return null;
@@ -54,18 +51,10 @@ export function getPluginSecrets(app: App): PluginSecrets | null {
   };
 }
 
-export function getStoredAccessKeyId(app: App): string {
-  return app.secretStorage.getSecret(ACCESS_KEY_ID_SECRET_ID) ?? "";
+export function getStoredAccessKeyIdSecretName(settings: PluginSettings): string {
+  return settings.accessKeyIdSecretName;
 }
 
-export function getStoredSecretAccessKey(app: App): string {
-  return app.secretStorage.getSecret(SECRET_ACCESS_KEY_SECRET_ID) ?? "";
-}
-
-export function saveAccessKeyId(app: App, value: string) {
-  app.secretStorage.setSecret(ACCESS_KEY_ID_SECRET_ID, value.trim());
-}
-
-export function saveSecretAccessKey(app: App, value: string) {
-  app.secretStorage.setSecret(SECRET_ACCESS_KEY_SECRET_ID, value.trim());
+export function getStoredSecretAccessKeySecretName(settings: PluginSettings): string {
+  return settings.secretAccessKeySecretName;
 }

@@ -38,8 +38,8 @@ Normal settings are stored in plugin data:
 
 Secrets are stored with Obsidian secret storage:
 
-- `accessKeyId`
-- `secretAccessKey`
+- `accessKeyIdSecretName`
+- `secretAccessKeySecretName`
 
 The plugin is read-only against R2. It does not upload, modify, or delete remote objects.
 

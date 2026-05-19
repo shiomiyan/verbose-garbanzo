@@ -1,10 +1,8 @@
 import { PluginSettingTab, SecretComponent, Setting } from "obsidian";
 import type R2SyncPlugin from "../main";
 import {
-  getStoredAccessKeyId,
-  getStoredSecretAccessKey,
-  saveAccessKeyId,
-  saveSecretAccessKey,
+  getStoredAccessKeyIdSecretName,
+  getStoredSecretAccessKeySecretName,
 } from "../sync/config";
 
 export class R2SyncSettingTab extends PluginSettingTab {
@@ -29,19 +27,21 @@ export class R2SyncSettingTab extends PluginSettingTab {
 
     this.addSecretSetting({
       name: "Access key ID",
-      desc: "Stored with Obsidian secret storage.",
-      value: getStoredAccessKeyId(this.app),
-      onChange: (value) => {
-        saveAccessKeyId(this.app, value);
+      desc: "Select a secret from Obsidian secret storage.",
+      value: getStoredAccessKeyIdSecretName(this.plugin.settings),
+      onChange: async (value) => {
+        this.plugin.settings.accessKeyIdSecretName = value.trim();
+        await this.plugin.saveSettings();
       },
     });
 
     this.addSecretSetting({
       name: "Secret access key",
-      desc: "Stored with Obsidian secret storage.",
-      value: getStoredSecretAccessKey(this.app),
-      onChange: (value) => {
-        saveSecretAccessKey(this.app, value);
+      desc: "Select a secret from Obsidian secret storage.",
+      value: getStoredSecretAccessKeySecretName(this.plugin.settings),
+      onChange: async (value) => {
+        this.plugin.settings.secretAccessKeySecretName = value.trim();
+        await this.plugin.saveSettings();
       },
     });
 
@@ -173,14 +173,14 @@ export class R2SyncSettingTab extends PluginSettingTab {
     name: string;
     desc: string;
     value: string;
-    onChange: (value: string) => void;
+    onChange: (value: string) => Promise<void>;
   }) {
     new Setting(this.containerEl)
       .setName(name)
       .setDesc(desc)
       .addComponent((element) =>
-        new SecretComponent(this.app, element).setValue(value).onChange((nextValue) => {
-          onChange(nextValue);
+        new SecretComponent(this.app, element).setValue(value).onChange(async (nextValue) => {
+          await onChange(nextValue);
         }),
       );
   }
