@@ -2,8 +2,12 @@ name: Release
 
 on:
   push:
-    tags:
-      - "v*"
+    branches:
+      - master
+
+concurrency:
+  group: release-master
+  cancel-in-progress: false
 
 permissions:
   contents: write
@@ -11,9 +15,12 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
 
       - name: Setup pnpm
         uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
@@ -29,15 +36,51 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Typecheck
+        run: pnpm run typecheck
+
       - name: Build
         run: pnpm run build
 
+      - name: Lint
+        run: pnpm run lint
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config commit.gpgsign false
+
+      - name: Bump patch version
+        run: |
+          pnpm version patch --no-git-tag-version
+          node version-bump.mjs
+          git add package.json manifest.json versions.json
+
+      - name: Read release version
+        id: version
+        run: node -e 'console.log("version=" + require("./package.json").version)' >> "$GITHUB_OUTPUT"
+
+      - name: Commit version bump
+        run: |
+          git commit -m "[skip ci] bump version to ${{ steps.version.outputs.version }}"
+          git push origin HEAD:master
+
+      - name: Build release artifacts
+        run: pnpm run build
+
+      - name: Create tag
+        run: |
+          git tag "${{ steps.version.outputs.version }}"
+          git push origin "${{ steps.version.outputs.version }}"
+
       - name: Create GitHub release
         env:
-          GITHUB_TOKEN: ${{ github.token }}
-        run: >-
-          gh release create "${GITHUB_REF_NAME}"
-          --generate-notes
-          main.js
-          manifest.json
-          styles.css
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_BODY: ${{ github.event.head_commit.message }}
+        run: |
+          printf '%s\n' "$RELEASE_BODY" > release-notes.md
+          gh release create "${{ steps.version.outputs.version }}" \
+            manifest.json main.js styles.css \
+            --title "${{ steps.version.outputs.version }}" \
+            --notes-file release-notes.md
